@@ -1,26 +1,34 @@
 # Viglet Search
 
-A powerful content indexing and search platform built with Spring Boot and Apache Lucene.
+A powerful content indexing and search platform built with Spring Boot and Apache Lucene, now featuring a modern React frontend.
 
 ## Features
 
 - **Content Management**: Create, read, update, and delete content items
 - **Full-Text Search**: Advanced search capabilities powered by Apache Lucene
 - **REST API**: Complete REST API for programmatic access
-- **Web Interface**: User-friendly web interface for content management and search
+- **Modern Web Interface**: React-based frontend with shadcn/ui components
 - **Search Highlighting**: Results include highlighted search terms
 - **Filter Search**: Search by category, author, and text content
 - **Real-time Indexing**: Content is automatically indexed when created or updated
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 
 ## Technology Stack
 
-- **Backend**: Spring Boot 3.2.0
+### Backend
+- **Spring Boot**: 3.2.0
 - **Search Engine**: Apache Lucene 9.8.0
 - **Database**: H2 Database (embedded)
 - **ORM**: Spring Data JPA
-- **Template Engine**: Thymeleaf
-- **Frontend**: Bootstrap 5.3.0, Font Awesome 6.4.0
 - **Build Tool**: Maven
+
+### Frontend
+- **React**: 19 with TypeScript
+- **Build Tool**: Vite
+- **UI Components**: shadcn/ui
+- **Styling**: Tailwind CSS
+- **HTTP Client**: Axios
+- **Routing**: React Router
 
 ## Quick Start
 
@@ -28,6 +36,7 @@ A powerful content indexing and search platform built with Spring Boot and Apach
 
 - Java 17 or later
 - Maven 3.6 or later
+- Node.js 18 or later (for frontend development)
 
 ### Running the Application
 
@@ -48,6 +57,45 @@ http://localhost:8080
 ```
 
 The application will create an H2 database file and Lucene index directory automatically.
+
+## Frontend Development
+
+The React frontend is located in the `frontend/` directory and is automatically built during the Maven build process.
+
+### Development Mode
+
+For frontend development with hot reload:
+
+1. Start the Spring Boot backend:
+```bash
+mvn spring-boot:run
+```
+
+2. In a separate terminal, start the frontend development server:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+3. Open your browser to:
+```
+http://localhost:3000
+```
+
+The development server will proxy API requests to the Spring Boot backend at `http://localhost:8080`.
+
+### Manual Frontend Build
+
+To manually build the frontend:
+
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+The built files will be placed in `src/main/resources/static/` and served by Spring Boot.
 
 ## API Endpoints
 
@@ -94,12 +142,16 @@ curl "http://localhost:8080/api/content/search?query=spring&category=Technology&
 
 ## Web Interface
 
-The web interface provides:
+The modern React frontend provides:
 
-- **Home Page**: Overview and quick search
-- **Advanced Search**: Full search capabilities with filters
-- **Content Management**: CRUD operations for content
-- **Search Results**: Highlighted search results with relevance scores
+- **Homepage**: Welcome page with statistics and recent content
+- **Content Management**: Full CRUD operations with intuitive forms
+- **Content List**: Paginated view of all content with search and filters
+- **Content Detail**: Rich view of individual content items with metadata
+- **Advanced Search**: Comprehensive search with multiple filters
+- **Search Results**: Highlighted results with relevance scores
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
+- **Modern UI**: Clean interface built with shadcn/ui components
 
 ## Search Features
 
@@ -150,17 +202,27 @@ src/
 ├── main/
 │   ├── java/com/viglet/search/
 │   │   ├── config/          # Configuration classes
-│   │   ├── controller/      # REST and Web controllers
+│   │   ├── controller/      # REST controllers
 │   │   ├── dto/             # Data Transfer Objects
 │   │   ├── entity/          # JPA entities
 │   │   ├── repository/      # JPA repositories
 │   │   └── service/         # Business logic
 │   └── resources/
-│       ├── static/          # CSS, JS files
-│       ├── templates/       # Thymeleaf templates
+│       ├── static/          # Built React frontend
 │       └── application.properties
-└── test/
-    └── java/                # Test files
+├── test/
+│   └── java/                # Test files
+└── frontend/                # React frontend source
+    ├── src/
+    │   ├── components/      # React components
+    │   │   └── ui/          # shadcn/ui components
+    │   ├── pages/           # Page components
+    │   ├── lib/             # Utilities and API client
+    │   ├── types/           # TypeScript definitions
+    │   └── hooks/           # Custom React hooks
+    ├── package.json
+    ├── vite.config.ts
+    └── tailwind.config.js
 ```
 
 ## Development
