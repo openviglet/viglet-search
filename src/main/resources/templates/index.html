@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+<body>
+    <div th:fragment="content" class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-4 mb-3">
+                    <i class="fas fa-search text-primary me-3"></i>
+                    Welcome to Viglet Search
+                </h1>
+                <p class="lead text-muted">
+                    A powerful content indexing and search platform built with Spring Boot and Apache Lucene
+                </p>
+            </div>
+
+            <!-- Quick Search -->
+            <div class="card mb-5 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-search text-primary me-2"></i>Quick Search
+                    </h5>
+                    <form th:action="@{/search}" method="get">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control form-control-lg" name="query" 
+                                       placeholder="Enter search terms..." required>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-search me-2"></i>Search
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" name="category" 
+                                       placeholder="Filter by category...">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" name="author" 
+                                       placeholder="Filter by author...">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="row mb-5">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-plus-circle fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Add Content</h5>
+                            <p class="card-text text-muted">
+                                Create and index new content with title, body, category, and tags.
+                            </p>
+                            <a th:href="@{/content/new}" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>Add Content
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Advanced Search</h5>
+                            <p class="card-text text-muted">
+                                Search content with filters by category, author, and full-text search.
+                            </p>
+                            <a th:href="@{/search}" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Search
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-list fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">Manage Content</h5>
+                            <p class="card-text text-muted">
+                                View, edit, and delete your indexed content items.
+                            </p>
+                            <a th:href="@{/content}" class="btn btn-info">
+                                <i class="fas fa-list me-2"></i>View All
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Content -->
+            <div th:if="${recentContent != null and not #lists.isEmpty(recentContent)}" class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock text-warning me-2"></i>Recent Content
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div th:each="content : ${recentContent}" class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a th:href="@{/content/{id}(id=${content.id})}" th:text="${content.title}"
+                                           class="text-decoration-none">Content Title</a>
+                                    </h6>
+                                    <p class="card-text text-muted small">
+                                        <span th:if="${content.category}" class="badge bg-secondary me-2" 
+                                              th:text="${content.category}">Category</span>
+                                        <span th:if="${content.author}" class="text-muted" 
+                                              th:text="'by ' + ${content.author}">Author</span>
+                                    </p>
+                                    <p class="card-text">
+                                        <small class="text-muted" 
+                                               th:text="${#temporals.format(content.createdAt, 'MMM dd, yyyy')}">
+                                            Created Date
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Getting Started -->
+            <div th:if="${recentContent == null or #lists.isEmpty(recentContent)}" class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-rocket fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Get Started</h5>
+                    <p class="card-text text-muted mb-4">
+                        You don't have any content yet. Start by adding your first content item to see the power of Lucene search!
+                    </p>
+                    <a th:href="@{/content/new}" class="btn btn-warning btn-lg">
+                        <i class="fas fa-plus me-2"></i>Add Your First Content
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
