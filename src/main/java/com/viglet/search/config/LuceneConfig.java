@@ -51,8 +51,10 @@ public class LuceneConfig {
     }
     
     @Bean
-    public SearcherManager searcherManager(Directory directory) throws IOException {
+    public SearcherManager searcherManager(Directory directory, IndexWriter indexWriter) throws IOException {
         if (searcherManager == null) {
+            // Ensure the index exists by committing the IndexWriter first
+            indexWriter.commit();
             searcherManager = new SearcherManager(directory, null);
         }
         return searcherManager;
