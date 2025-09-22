@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+<body>
+    <div th:fragment="content" class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-search text-primary me-2"></i>Advanced Search
+            </h2>
+
+            <!-- Search Form -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <form th:action="@{/search}" method="get">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="query" class="form-label">Search Query</label>
+                                <input type="text" class="form-control" id="query" name="query" 
+                                       th:value="${query}" placeholder="Enter search terms...">
+                                <div class="form-text">Search in title, body, and tags</div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="category" class="form-label">Category</label>
+                                <input type="text" class="form-control" id="category" name="category" 
+                                       th:value="${category}" placeholder="Filter by category">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="author" class="form-label">Author</label>
+                                <input type="text" class="form-control" id="author" name="author" 
+                                       th:value="${author}" placeholder="Filter by author">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-search me-2"></i>Search
+                                </button>
+                                <a th:href="@{/search}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-2"></i>Clear
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div th:if="${results != null}">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-list-alt text-info me-2"></i>Search Results
+                        <span class="badge bg-info" th:text="${resultCount}">0</span>
+                    </h4>
+                    <div th:if="${query != null or category != null or author != null}" class="text-muted">
+                        <small>
+                            <span th:if="${query}">Query: "<span th:text="${query}"></span>"</span>
+                            <span th:if="${category}"> | Category: "<span th:text="${category}"></span>"</span>
+                            <span th:if="${author}"> | Author: "<span th:text="${author}"></span>"</span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- No Results -->
+                <div th:if="${#lists.isEmpty(results)}" class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    No results found for your search criteria. Try different keywords or filters.
+                </div>
+
+                <!-- Results List -->
+                <div th:if="${not #lists.isEmpty(results)}">
+                    <div th:each="result : ${results}" class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="card-title">
+                                        <a th:href="@{/content/{id}(id=${result.id})}" 
+                                           th:utext="${result.highlightedTitle}" 
+                                           class="text-decoration-none">
+                                            Title
+                                        </a>
+                                    </h5>
+                                    <p class="card-text" th:utext="${result.highlightedBody}">
+                                        Body content with highlights...
+                                    </p>
+                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                        <span th:if="${result.category}" class="badge bg-secondary" 
+                                              th:text="${result.category}">Category</span>
+                                        <span th:if="${result.author}" class="badge bg-info" 
+                                              th:text="'Author: ' + ${result.author}">Author</span>
+                                        <span th:if="${result.tags}" class="badge bg-light text-dark" 
+                                              th:text="'Tags: ' + ${result.tags}">Tags</span>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        Created: <span th:text="${#temporals.format(result.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                        <span th:if="${result.updatedAt != result.createdAt}">
+                                            | Updated: <span th:text="${#temporals.format(result.updatedAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                        </span>
+                                    </small>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-star text-warning me-1"></i>
+                                            Score: <span th:text="${#numbers.formatDecimal(result.score, 1, 2)}">0.00</span>
+                                        </small>
+                                    </div>
+                                    <div class="btn-group-vertical" role="group">
+                                        <a th:href="@{/content/{id}(id=${result.id})}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                        <a th:href="@{/content/{id}/edit(id=${result.id})}" 
+                                           class="btn btn-outline-secondary btn-sm">
+                                            <i class="fas fa-edit me-1"></i>Edit
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Tips -->
+            <div th:if="${results == null}" class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>Search Tips
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Query Syntax:</h6>
+                            <ul class="list-unstyled">
+                                <li><code>java spring</code> - Find documents containing both words</li>
+                                <li><code>"spring boot"</code> - Find exact phrase</li>
+                                <li><code>java OR python</code> - Find documents containing either word</li>
+                                <li><code>java -python</code> - Find documents with java but not python</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Filters:</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Category:</strong> Filter by content category</li>
+                                <li><strong>Author:</strong> Filter by content author</li>
+                                <li><strong>Combined:</strong> Use query with filters for precise results</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

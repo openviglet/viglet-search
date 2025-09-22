@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+<body>
+    <div th:fragment="content" class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-eye text-primary me-2"></i>View Content
+                </h2>
+                <div>
+                    <a th:href="@{/content/{id}/edit(id=${content.id})}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-edit me-2"></i>Edit
+                    </a>
+                    <a th:href="@{/content}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="mb-0" th:text="${content.title}">Content Title</h3>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-light text-dark">ID: <span th:text="${content.id}">1</span></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Metadata -->
+                    <div class="row mt-3">
+                        <div class="col-md-8">
+                            <div class="d-flex flex-wrap gap-2">
+                                <span th:if="${content.category}" class="badge bg-secondary" th:text="${content.category}">Category</span>
+                                <span th:if="${content.author}" class="badge bg-info" th:text="'Author: ' + ${content.author}">Author</span>
+                                <span th:if="${content.tags}" class="badge bg-light text-dark" th:text="'Tags: ' + ${content.tags}">Tags</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Created: <span th:text="${#temporals.format(content.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                            </small>
+                            <div th:if="${content.updatedAt != content.createdAt}">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar-edit me-1"></i>
+                                    Updated: <span th:text="${#temporals.format(content.updatedAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Content Body -->
+                    <div class="content-body">
+                        <p th:text="${content.body}" style="white-space: pre-wrap; line-height: 1.6;">
+                            Content body will be displayed here with proper formatting...
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-light">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                This content is indexed and searchable via Lucene
+                            </small>
+                        </div>
+                        <div class="col-auto">
+                            <div class="btn-group" role="group">
+                                <a th:href="@{/content/{id}/edit(id=${content.id})}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        th:onclick="'deleteContent(' + ${content.id} + ', \'' + ${content.title} + '\')'">
+                                    <i class="fas fa-trash me-1"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Test -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-search text-primary me-2"></i>Test Search with This Content
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/search}" method="get">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Search in Title/Body</label>
+                                <input type="text" class="form-control" name="query" 
+                                       placeholder="Enter keywords from this content...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Category Filter</label>
+                                <input type="text" class="form-control" name="category" 
+                                       th:value="${content.category}" th:placeholder="${content.category ?: 'Category'}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Author Filter</label>
+                                <input type="text" class="form-control" name="author" 
+                                       th:value="${content.author}" th:placeholder="${content.author ?: 'Author'}">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Related Actions -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-tools text-secondary me-2"></i>Related Actions
+                    </h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a th:href="@{/search(category=${content.category})}" 
+                           th:if="${content.category}"
+                           class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-filter me-1"></i>
+                            Find similar in "<span th:text="${content.category}">Category</span>"
+                        </a>
+                        <a th:href="@{/search(author=${content.author})}" 
+                           th:if="${content.author}"
+                           class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-user me-1"></i>
+                            More by "<span th:text="${content.author}">Author</span>"
+                        </a>
+                        <a th:href="@{/content/new}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-plus me-1"></i>Add New Content
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this content?</p>
+                    <div class="alert alert-warning">
+                        <strong id="deleteContentTitle">Content Title</strong>
+                    </div>
+                    <p class="text-muted">This action cannot be undone. The content will be removed from both the database and search index.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <form id="deleteForm" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function deleteContent(id, title) {
+            document.getElementById('deleteContentTitle').textContent = title;
+            document.getElementById('deleteForm').action = '/content/' + id + '/delete';
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+    </script>
+</body>
+</html>
