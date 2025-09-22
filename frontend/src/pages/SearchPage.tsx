@@ -62,18 +62,6 @@ export function SearchPage() {
     })
   }
 
-  const highlightText = (text: string, highlights: string[]) => {
-    if (!highlights || highlights.length === 0) return text
-
-    let highlightedText = text
-    highlights.forEach(highlight => {
-      const regex = new RegExp(`(${highlight})`, 'gi')
-      highlightedText = highlightedText.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>')
-    })
-    
-    return highlightedText
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -174,58 +162,50 @@ export function SearchPage() {
           <CardContent>
             <div className="space-y-6">
               {results.map((result) => (
-                <div key={result.content.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                <div key={result.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-2">
-                        <Link to={`/content/${result.content.id}`}>
-                          <h3 className="font-semibold hover:text-primary transition-colors">
-                            {result.content.title}
-                          </h3>
+                        <Link to={`/content/${result.id}`}>
+                          <h3 
+                            className="font-semibold hover:text-primary transition-colors"
+                            dangerouslySetInnerHTML={{ 
+                              __html: result.highlightedTitle || result.title 
+                            }}
+                          />
                         </Link>
                         <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
                           Score: {result.score.toFixed(2)}
                         </span>
                       </div>
                       
-                      {result.highlights && result.highlights.length > 0 ? (
-                        <div className="text-sm text-muted-foreground mb-2">
-                          {result.highlights.map((highlight, index) => (
-                            <div 
-                              key={index} 
-                              className="mb-1"
-                              dangerouslySetInnerHTML={{ 
-                                __html: highlightText(highlight, [searchForm.query]) 
-                              }}
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-                          {result.content.body.substring(0, 200)}...
-                        </p>
-                      )}
+                      <div 
+                        className="text-sm text-muted-foreground mb-2"
+                        dangerouslySetInnerHTML={{ 
+                          __html: result.highlightedBody || result.body.substring(0, 200) + '...' 
+                        }}
+                      />
 
                       <div className="flex items-center flex-wrap gap-4 text-xs text-muted-foreground">
-                        {result.content.author && (
-                          <span>By {result.content.author}</span>
+                        {result.author && (
+                          <span>By {result.author}</span>
                         )}
-                        {result.content.category && (
+                        {result.category && (
                           <span className="bg-secondary px-2 py-1 rounded">
-                            {result.content.category}
+                            {result.category}
                           </span>
                         )}
-                        <span>Created {formatDate(result.content.createdAt)}</span>
+                        <span>Created {formatDate(result.createdAt)}</span>
                       </div>
                     </div>
                     
                     <div className="flex items-center space-x-2 ml-4">
-                      <Link to={`/content/${result.content.id}`}>
+                      <Link to={`/content/${result.id}`}>
                         <Button variant="ghost" size="sm">
                           <Eye className="h-4 w-4" />
                         </Button>
                       </Link>
-                      <Link to={`/content/${result.content.id}/edit`}>
+                      <Link to={`/content/${result.id}/edit`}>
                         <Button variant="ghost" size="sm">
                           <Edit className="h-4 w-4" />
                         </Button>

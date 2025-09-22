@@ -18,8 +18,8 @@ export interface ContentDto {
   tags?: string
 }
 
-export interface SearchResult {
-  content: Content
+export interface SearchResult extends Content {
   score: number
-  highlights: string[]
+  highlightedTitle?: string
+  highlightedBody?: string
 }
